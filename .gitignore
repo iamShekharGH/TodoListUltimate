@@ -1,0 +1,27 @@
+# IDE files
+*.iml
+.idea/
+.gradle/
+local.properties
+
+# Build files
+build/
+
+# Keystore files
+*.jks
+*.keystore
+
+# Android Studio profiling files
+*.hprof
+
+# Mac specific
+.DS_Store
+
+# Gradle files
+
+# Android Studio
+captures/
+.externalNativeBuild/
+
+# KSP
+/app/build/generated/ksp/
