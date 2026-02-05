@@ -2,11 +2,11 @@
 # 🚀 TodoListUltimate : The TDD Speedrun
 
 ## Level 0: The Archaeology (Study Phase)
-- [ ] **Map**: Drew the Database -> Repository -> ViewModel flow on paper
-- [ ] **Review**: Read `TaskMasterDao.kt` and listed all 5 methods needed
-- [ ] **Review**: Read `TaskMasterRepositoryImpl.kt` to understand the suspend logic
-- [ ] **Review**: Read `TaskWidget.kt` to remember the "200ms delay" fix
-- [ ] **Setup**: Dependencies added to `libs.versions.toml`
+- ✅ **Map**: Drew the Database -> Repository -> ViewModel flow on paper
+- ✅ **Review**: Read `TaskMasterDao.kt` and listed all 5 methods needed
+- ✅ **Review**: Read `TaskMasterRepositoryImpl.kt` to understand the suspend logic
+- ✅ **Review**: Read `TaskWidget.kt` to remember the "200ms delay" fix
+- ✅ **Setup**: Dependencies added to `libs.versions.toml`
 
 ## Level 1: The Bedrock (Database)
 - [ ] **Setup**: Dependencies (Hilt, Room, Coroutines) added to `libs.versions.toml`
