@@ -9,11 +9,11 @@
 - ✅ **Setup**: Dependencies added to `libs.versions.toml`
 
 ## Level 1: The Bedrock (Database)
-- [ ] **Setup**: Dependencies (Hilt, Room, Coroutines) added to `libs.versions.toml`
-- [ ] **Entity**: `TaskMasterDataObject` created
-- [ ] **Test**: `TaskMasterDaoTest` created (Failing)
-- [ ] **Impl**: `TaskMasterDao` & `TaskMasterDatabase` created
-- [ ] **Verify**: `TaskMasterDaoTest` passing (GREEN ✅)
+- ✅ **Setup**: Dependencies (Hilt, Room, Coroutines) added to `libs.versions.toml`
+- ✅ **Entity**: `TaskMasterDataObject` created
+- ✅ **Test**: `TaskMasterDaoTest` created (Failing)
+- ✅ **Impl**: `TaskMasterDao` & `TaskMasterDatabase` created
+- ✅ **Verify**: `TaskMasterDaoTest` passing (GREEN ✅)
 
 ## Level 2: The Gatekeeper (Repository)
 - [ ] **Setup**: `Result` or `Resource` wrapper class created
