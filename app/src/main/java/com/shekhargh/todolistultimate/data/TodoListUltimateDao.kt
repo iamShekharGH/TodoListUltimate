@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface TodoListUltimateDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertItem(item: TodoTaskItem): Int
+    suspend fun insertItem(item: TodoTaskItem): Long
 
     @Delete
     suspend fun deleteItem(item: TodoTaskItem): Int
