@@ -5,6 +5,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 
 const val TABLE_NAME = "todo_list_ultimate_table"
+const val TASK_MASTER_DATABASE_NAME = "todo_list_ultimate_database"
 
 @Entity(tableName = TABLE_NAME)
 data class TodoTaskItem(
