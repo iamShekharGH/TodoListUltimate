@@ -23,7 +23,6 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsRepository(impl: TodoListUltimateRepositoryImpl): TodoListUltimateRepository
-//    = TodoListUltimateRepositoryImpl(dao)
 
     companion object {
         @Provides

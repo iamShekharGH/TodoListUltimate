@@ -20,6 +20,13 @@ interface TodoListUltimateDao {
     @Update
     suspend fun updateItem(item: TodoTaskItem): Int
 
+    @Query("UPDATE TODO_LIST_ULTIMATE_TABLE SET isItDone = :isItDone WHERE id = :id")
+    suspend fun updateItemCompletionStatus(isItDone: Boolean, id: Int) : Int
+
+
     @Query("SELECT * FROM TODO_LIST_ULTIMATE_TABLE")
     fun getAllItems(): Flow<List<TodoTaskItem>>
+
+    @Query("SELECT * FROM TODO_LIST_ULTIMATE_TABLE WHERE id = :id")
+    suspend fun getItemById(id: Int): TodoTaskItem?
 }

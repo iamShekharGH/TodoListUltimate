@@ -75,5 +75,26 @@ class TodoListUltimateDaoTest {
 
     }
 
+    @Test
+    fun updateItemDoneStatus() = runTest {
+        val item = dummyTasks[3]
+        dao.insertItem(item)
+        val insertedItem = dao.getAllItems().first().first()
+        assertThat(item).isEqualTo(insertedItem.copy(id = item.id))
+        dao.updateItemCompletionStatus(true, item.id)
+        val updatedItem = dao.getItemById(insertedItem.id)
+        assertThat(updatedItem?.isItDone).isEqualTo(true)
+    }
+
+    @Test
+    fun getTheItemById() = runTest {
+        val item = dummyTasks[4]
+        dao.insertItem(item)
+        var insertedItem = dao.getAllItems().first().first()
+        val getItem = dao.getItemById(insertedItem.id)
+        assertThat(getItem).isEqualTo(insertedItem)
+
+    }
+
 
 }
