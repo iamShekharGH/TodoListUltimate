@@ -73,7 +73,7 @@ class TodoListUltimateRepositoryTest {
         coEvery { dao.getItemById(item.id) } returns item.copy(isItDone = true)
         repository.updateItemCompletionStatus(true, item.id)
         val updatedItem = repository.getTaskById(item.id)
-        assertThat(updatedItem.isItDone).isEqualTo(true)
+        assertThat(updatedItem?.isItDone).isEqualTo(true)
     }
 
     @Test

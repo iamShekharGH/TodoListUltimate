@@ -91,7 +91,7 @@ class TodoListUltimateDaoTest {
     fun getTheItemById() = runTest {
         val item = dummyTasks[4]
         dao.insertItem(item)
-        var insertedItem = dao.getAllItems().first().first()
+        val insertedItem = dao.getAllItems().first().first()
         val getItem = dao.getItemById(insertedItem.id)
         assertThat(getItem).isEqualTo(insertedItem)
 
