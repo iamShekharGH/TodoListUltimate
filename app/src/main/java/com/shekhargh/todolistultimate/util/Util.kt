@@ -1,4 +1,4 @@
-package com.shekhargh.todolistultimate
+package com.shekhargh.todolistultimate.util
 
 import com.shekhargh.todolistultimate.data.Priority
 import com.shekhargh.todolistultimate.data.TodoTaskItem

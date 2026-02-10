@@ -6,6 +6,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.common.truth.Truth.assertThat
 import com.shekhargh.todolistultimate.data.TodoListUltimateDao
 import com.shekhargh.todolistultimate.data.TodoListUltimateDatabase
+import com.shekhargh.todolistultimate.util.dummyTasks
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
