@@ -29,7 +29,17 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
         }
+        debug {
+            enableUnitTestCoverage = true
+            enableAndroidTestCoverage = true
+        }
+    }
+    packagingOptions {
+        resources.excludes.add("META-INF/LICENSE.md")
+        resources.excludes.add("META-INF/LICENSE-notice.md")
     }
     compileOptions{
         isCoreLibraryDesugaringEnabled = true
@@ -44,6 +54,15 @@ kotlin {
 }
 
 dependencies {
+    /*constraints {
+        implementation(libs.mockk) {
+            because("Align MockK versions to be compatible with project Kotlin version")
+        }
+        implementation(libs.mockk.android) {
+            because("Align MockK versions to be compatible with project Kotlin version")
+        }
+    }*/
+
     // Core & Lifecycle
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -102,7 +121,7 @@ dependencies {
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
-    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.android)
 
     // Debug
     debugImplementation(libs.androidx.compose.ui.tooling)
