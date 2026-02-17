@@ -52,9 +52,9 @@ class TodoListUltimateRepositoryTest {
     @Test
     fun deleteItemFromDb() = runTest {
         val item = dummyTasks[0]
-        coEvery { dao.deleteItem(item) } returns 0
-        val done = repository.deleteItem(item)
-        assertThat(done).isEqualTo(0)
+        coEvery { dao.deleteItem(item.id) } returns 1
+        val done = repository.deleteItem(item.id)
+        assertThat(done).isEqualTo(1)
 
     }
 

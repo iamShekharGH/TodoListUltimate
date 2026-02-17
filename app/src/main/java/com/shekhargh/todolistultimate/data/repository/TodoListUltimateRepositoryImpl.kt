@@ -19,7 +19,7 @@ class TodoListUltimateRepositoryImpl @Inject constructor(
 
     override suspend fun insertItem(item: TodoTaskItem) = dao.insertItem(item)
 
-    override suspend fun deleteItem(item: TodoTaskItem) = dao.deleteItem(item)
+    override suspend fun deleteItem(item: Int) = dao.deleteItem(item)
 
     override suspend fun updateItem(item: TodoTaskItem) = dao.updateItem(item)
 

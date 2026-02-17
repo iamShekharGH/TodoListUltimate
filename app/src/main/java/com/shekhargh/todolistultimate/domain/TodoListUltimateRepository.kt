@@ -8,7 +8,7 @@ interface TodoListUltimateRepository {
     fun getAllDummyTasks(): Flow<List<TodoTaskItem>>
 
     suspend fun insertItem(item: TodoTaskItem) : Long
-    suspend fun deleteItem(item: TodoTaskItem) : Int
+    suspend fun deleteItem(item: Int) : Int
     suspend fun updateItem(item: TodoTaskItem) : Int
 
     suspend fun updateItemCompletionStatus(isItDone: Boolean,id: Int) : Int

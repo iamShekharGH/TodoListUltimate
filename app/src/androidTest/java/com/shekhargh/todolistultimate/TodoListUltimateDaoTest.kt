@@ -70,7 +70,8 @@ class TodoListUltimateDaoTest {
         dao.insertItem(item)
         val items = dao.getAllItems().first()
         assertThat(item).isEqualTo(items.first().copy(id = item.id))
-        dao.deleteItem(items.first())
+        val affectedRows = dao.deleteItem(items.first().id)
+        assertThat(affectedRows).isEqualTo(1)
 
         assertThat(dao.getAllItems().first()).isEmpty()
 
