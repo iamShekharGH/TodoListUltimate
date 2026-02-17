@@ -4,12 +4,13 @@ import com.google.common.truth.Truth.assertThat
 import com.shekhargh.todolistultimate.data.usecase.GetAllTasksUseCase
 import com.shekhargh.todolistultimate.domain.TodoListUltimateRepository
 import com.shekhargh.todolistultimate.util.dummyTasks
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.Before
 import org.junit.Test
 
 class GetAllTasksUseCaseTest {
@@ -17,19 +18,22 @@ class GetAllTasksUseCaseTest {
     private val repository: TodoListUltimateRepository = mockk()
     private lateinit var useCase: GetAllTasksUseCase
 
+    @Before
+    fun setup() {
+        useCase = GetAllTasksUseCase(repository)
+    }
 
     @Test
-    fun `invoke calls repository and returns flow of tasks`() = runTest {
+    fun `given repository has tasks, when use case is invoked, then it returns flow of tasks`() =
+        runTest {
 
-        every { repository.getAllTasks() } returns flowOf(dummyTasks)
+            coEvery { repository.getAllTasks() } returns flowOf(dummyTasks)
 
-        useCase = GetAllTasksUseCase(repository)
+            val result = useCase().first()
 
-        val result = useCase().first()
-
-        assertThat(result).isEqualTo(dummyTasks)
-        verify(exactly = 1) { repository.getAllTasks() }
+            assertThat(result).isEqualTo(dummyTasks)
+            coVerify(exactly = 1) { repository.getAllTasks() }
 
 
-    }
+        }
 }
