@@ -17,8 +17,7 @@ import javax.inject.Inject
 class MainTodoListViewModel @Inject constructor(
     private val getAllTasksUseCase: GetAllTasksUseCase
 ) : ViewModel() {
-
-    private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
+    
     val uiState: StateFlow<UiState> = getAllTasksUseCase().map { list ->
         if (list.isEmpty()) UiState.Empty else UiState.ItemsReceived(list)
     }.stateIn(
@@ -31,12 +30,6 @@ class MainTodoListViewModel @Inject constructor(
     Automatic: You don't need to remember to call getAllTasks() in init {}.
      */
 
-
-    fun getAllTasks() {
-        viewModelScope.launch {
-            getAllTasksUseCase().collect { _uiState.value = it as UiState }
-        }
-    }
 
 
 }
