@@ -1,7 +1,8 @@
 package com.shekhargh.todolistultimate.usecase
 
 import com.google.common.truth.Truth.assertThat
-import com.shekhargh.todolistultimate.data.usecase.UpdateItemCompletionStatus
+import com.shekhargh.todolistultimate.data.usecase.UpdateCompleteStatusParams
+import com.shekhargh.todolistultimate.data.usecase.UpdateItemCompletionStatusUseCase
 import com.shekhargh.todolistultimate.domain.TodoListUltimateRepository
 import com.shekhargh.todolistultimate.util.dummyTasks
 import io.mockk.coEvery
@@ -14,11 +15,11 @@ import org.junit.Test
 class UpdateItemCompletionStatusTest {
 
     private val repository: TodoListUltimateRepository = mockk()
-    lateinit var sut: UpdateItemCompletionStatus
+    lateinit var sut: UpdateItemCompletionStatusUseCase
 
     @Before
     fun setup() {
-        sut = UpdateItemCompletionStatus(repository)
+        sut = UpdateItemCompletionStatusUseCase(repository)
     }
 
     @Test
@@ -35,7 +36,9 @@ class UpdateItemCompletionStatusTest {
                 )
             } returns updateItemId
 
-            val affectedRows = sut(updateItemState, updateItemId)
+            val affectedRows = sut(
+                UpdateCompleteStatusParams(updateItemState, updateItemId)
+            )
 
             assertThat(affectedRows).isEqualTo(updateItemId)
             coVerify(exactly = 1) {
