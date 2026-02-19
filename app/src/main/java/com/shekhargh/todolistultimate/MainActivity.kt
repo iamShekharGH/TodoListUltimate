@@ -22,9 +22,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoListUltimateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreenComposable(Modifier.padding(innerPadding))
-                }
+                MainScreenComposable()
+
             }
         }
     }
