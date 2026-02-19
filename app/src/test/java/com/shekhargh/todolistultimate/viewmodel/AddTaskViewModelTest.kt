@@ -1,0 +1,97 @@
+package com.shekhargh.todolistultimate.viewmodel
+
+import androidx.lifecycle.SavedStateHandle
+import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
+import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
+import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
+import com.shekhargh.todolistultimate.ui.viewModels.AddTaskViewModel
+import com.shekhargh.todolistultimate.ui.viewModels.changeToInputObject
+import com.shekhargh.todolistultimate.util.MainDispatcherRule
+import com.shekhargh.todolistultimate.util.dummyTasks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.junit.Test
+
+class AddTaskViewModelTest {
+
+    @get:Rule
+    val mainDispatcherRule = MainDispatcherRule()
+
+    private val insertItemUseCase: InsertItemUseCase = mockk(relaxed = true)
+    private val updateTaskUseCase: UpdateTaskUseCase = mockk(relaxed = true)
+    private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk()
+    private val savedStateHandle: SavedStateHandle = mockk()
+
+    private lateinit var sut: AddTaskViewModel
+
+
+    @Test
+    fun `given new task data, when onSubmitClicked is called, then insert use case is invoked`() =
+        runTest {
+            coEvery { savedStateHandle.get<Int>("task_id") } returns null
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                savedStateHandle
+            )
+            val title = "New Test Task"
+            val description = "A description for the test task"
+            sut.onTitleChanges(title)
+            sut.onDescriptionChanges(description)
+
+            val taskToInsert = sut.uiState.value.changeToInputObject()
+
+            sut.onSubmitClicked()
+            coVerify(exactly = 1) { insertItemUseCase(taskToInsert) }
+            coVerify(exactly = 0) { updateTaskUseCase(any()) }
+
+        }
+
+    @Test
+    fun `given existing task data, when onSubmitClicked is called, then update use case is invoked`() =
+        runTest {
+            val existingTask = dummyTasks[0]
+            coEvery { savedStateHandle.get<Int>("task_id") } returns existingTask.id
+            coEvery { getTaskByIdUseCase(existingTask.id) } returns existingTask
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                savedStateHandle
+            )
+
+            val updatedTitle = "Updated Title"
+            sut.onTitleChanges(updatedTitle)
+
+            val taskToUpdate = sut.uiState.value.changeToInputObject()
+
+            sut.onSubmitClicked()
+
+            coVerify(exactly = 0) { insertItemUseCase(any()) }
+            coVerify(exactly = 1) { updateTaskUseCase(taskToUpdate) }
+        }
+
+    @Test
+    fun `given a task id, when viewmodel is created, then ui state is updated with task data`() =
+        runTest {
+            val existingTask = dummyTasks[1]
+            coEvery { savedStateHandle.get<Int>("task_id") } returns existingTask.id
+            coEvery { getTaskByIdUseCase(existingTask.id) } returns existingTask
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                savedStateHandle
+            )
+
+            assert(sut.uiState.value.title == existingTask.title)
+            assert(sut.uiState.value.description == existingTask.description)
+        }
+}
