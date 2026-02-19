@@ -1,7 +1,9 @@
 package com.shekhargh.todolistultimate.data
 
 import androidx.room.TypeConverter
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 
 class TodoListUltimateTypeConverter {
@@ -28,12 +30,12 @@ class TodoListUltimateTypeConverter {
 
     @TypeConverter
     fun dateToString(date: LocalDateTime): String {
-        return date.toString()
+        return date.toInstant(ZoneOffset.UTC).toEpochMilli().toString()
     }
 
     @TypeConverter
     fun stringToDate(date: String): LocalDateTime {
-        return LocalDateTime.parse(date)
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(date.toLong()), ZoneOffset.UTC)
     }
 
 
