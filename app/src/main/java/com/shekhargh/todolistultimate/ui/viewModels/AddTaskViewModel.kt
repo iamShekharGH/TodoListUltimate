@@ -21,7 +21,7 @@ class AddTaskViewModel @Inject constructor(
     private val insertItemUseCase: InsertItemUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
-    private val savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddTaskUiState(title = "", description = ""))
