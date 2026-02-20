@@ -3,6 +3,28 @@ package com.shekhargh.todolistultimate.util
 import com.shekhargh.todolistultimate.data.Priority
 import com.shekhargh.todolistultimate.data.TodoTaskItem
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+
+
+fun LocalDateTime.toSimpleDateString(): String {
+
+    val day = this.dayOfMonth
+    val suffix = when {
+        (day % 10 == 1) && (day != 11) -> "st"
+        (day % 10 == 2) && (day != 12) -> "nd"
+        (day % 10 == 3) && (day != 13) -> "rd"
+        else -> "th"
+    }
+    val pattern = "d'$suffix' MMM yy"
+    val formatter = DateTimeFormatter.ofPattern(pattern, Locale.US)
+
+    return this.format(formatter)
+}
+fun LocalDateTime.toSimpleTimeString(): String {
+    val formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.US)
+    return this.format(formatter)
+}
 
 val dummyTasks = listOf(
     TodoTaskItem(

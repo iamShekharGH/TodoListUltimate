@@ -51,6 +51,18 @@ class AddTaskViewModel @Inject constructor(
         }
     }
 
+    fun onDoneCheck(isItDone: Boolean) {
+        _uiState.update { currentState ->
+            currentState.copy(isItDone = isItDone)
+        }
+    }
+
+    fun onPrioritySelected(priority: Priority) {
+        _uiState.update { currentState ->
+            currentState.copy(priority = priority)
+        }
+    }
+
     fun onSubmitClicked() {
         viewModelScope.launch {
             val taskToSave = uiState.value.changeToInputObject()
