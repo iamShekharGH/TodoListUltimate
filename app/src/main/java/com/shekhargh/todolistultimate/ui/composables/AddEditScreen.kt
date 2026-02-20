@@ -49,7 +49,6 @@ import com.shekhargh.todolistultimate.util.toSimpleDateString
 import com.shekhargh.todolistultimate.util.toSimpleTimeString
 import java.time.format.DateTimeFormatter
 
-private val dateFormatter = DateTimeFormatter.ofPattern("d'st' MMM yy")
 
 @Composable
 fun AddEditScreen(
