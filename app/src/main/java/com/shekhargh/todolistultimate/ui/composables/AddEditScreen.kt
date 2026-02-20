@@ -47,7 +47,6 @@ import com.shekhargh.todolistultimate.ui.viewModels.toAddTaskUiState
 import com.shekhargh.todolistultimate.util.dummyTasks
 import com.shekhargh.todolistultimate.util.toSimpleDateString
 import com.shekhargh.todolistultimate.util.toSimpleTimeString
-import java.time.format.DateTimeFormatter
 
 
 @Composable
