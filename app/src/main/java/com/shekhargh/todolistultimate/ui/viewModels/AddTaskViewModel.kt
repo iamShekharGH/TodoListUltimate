@@ -68,7 +68,7 @@ class AddTaskViewModel @Inject constructor(
     fun onSubmitClicked(onNavigateBack: () -> Unit) {
         viewModelScope.launch {
             val taskToSave = uiState.value.changeToInputObject()
-            var resultId: Number = if (taskId == null || taskId == -1) {
+            val resultId: Number = if (taskId == null || taskId == -1) {
                 insertItemUseCase(taskToSave)
             } else {
                 updateTaskUseCase(taskToSave.copy(id = taskId))

@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,6 +30,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -49,8 +53,10 @@ import com.shekhargh.todolistultimate.util.toSimpleDateString
 import com.shekhargh.todolistultimate.util.toSimpleTimeString
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditScreen(
+    onNavigateBack: () -> Unit,
     viewModel: AddTaskViewModel = hiltViewModel()
 ) {
 
@@ -64,6 +70,22 @@ fun AddEditScreen(
             SnackbarHost(hostState = snackbarHostState)
         },
         topBar = {
+            TopAppBar(
+                title = {
+                    Text(text = "Add/Edit Tasks.")
+
+                },
+                actions = {
+                    IconButton(onClick = {
+                        viewModel.onDeleteClicked(onNavigateBack)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = "Delete the task."
+                        )
+                    }
+                }
+            )
 
         }
     ) { padding ->
@@ -78,6 +100,7 @@ fun AddEditScreen(
                 onDoneCheck = viewModel::onDoneCheck,
                 onPrioritySelected = viewModel::onPrioritySelected,
                 onSubmitClicked = viewModel::onSubmitClicked,
+                onNavigateBack = onNavigateBack,
                 paddingValues = padding
             )
         }
@@ -91,7 +114,8 @@ fun AddEditScreenComposable(
     onDescriptionChanges: (String) -> Unit,
     onDoneCheck: (Boolean) -> Unit,
     onPrioritySelected: (Priority) -> Unit,
-    onSubmitClicked: () -> Unit,
+    onSubmitClicked: (onNavigateBack: () -> Unit) -> Unit,
+    onNavigateBack: () -> Unit,
     paddingValues: PaddingValues
 ) {
 
@@ -253,7 +277,7 @@ fun AddEditScreenComposable(
 
         OutlinedButton(
             onClick = {
-                onSubmitClicked()
+                onSubmitClicked(onNavigateBack)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,6 +299,7 @@ fun AddEditScreenComposablePreview() {
         onDoneCheck = {},
         onPrioritySelected = {},
         onSubmitClicked = {},
+        onNavigateBack = {},
         paddingValues = PaddingValues(4.dp)
     )
 }
