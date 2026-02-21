@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -32,19 +36,29 @@ import com.shekhargh.todolistultimate.util.dummyTasks
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MainScreenComposable(
-    viewModel: MainTodoListViewModel = hiltViewModel()
+fun MainScreen(
+    viewModel: MainTodoListViewModel = hiltViewModel(),
+    onNavigateToTask: (Int) -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+    Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
+        FloatingActionButton(
+            onClick = {
+                onNavigateToTask(-1)
+            }
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add new task")
+
+        }
+    }) { innerPadding ->
         when (val ui = uiState.value) {
             UiState.Empty -> {
                 EmptyScreenComposable(innerPadding)
             }
 
             is UiState.ItemsReceived -> {
-                MainScreenComposable(innerPadding, ui.items)
+                MainScreenComposable(innerPadding, ui.items, onNavigateToTask)
             }
 
             UiState.Loading -> {
@@ -72,7 +86,8 @@ fun LoadingScreenComposable(paddingValues: PaddingValues) {
 @Composable
 fun MainScreenComposable(
     paddingValues: PaddingValues,
-    items: List<TodoTaskItem>
+    items: List<TodoTaskItem>,
+    onNavigateToTask: (Int) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.padding(paddingValues),
@@ -80,7 +95,7 @@ fun MainScreenComposable(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items(items) { todoTaskItem ->
-            TodoItemCard(todoTaskItem)
+            TodoItemCard(todoTaskItem, onNavigateToTask = onNavigateToTask)
         }
     }
 
@@ -105,8 +120,9 @@ fun EmptyScreenComposable(paddingValues: PaddingValues) {
 }
 
 @Composable
-fun TodoItemCard(todoTaskItem: TodoTaskItem) {
+fun TodoItemCard(todoTaskItem: TodoTaskItem, onNavigateToTask: (Int) -> Unit) {
     Card(
+        onClick = { onNavigateToTask(todoTaskItem.id) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 4.dp, top = 4.dp, end = 4.dp)
@@ -121,13 +137,19 @@ fun TodoItemCard(todoTaskItem: TodoTaskItem) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = todoTaskItem.title, style = MaterialTheme.typography.titleMedium)
-                Text(text = todoTaskItem.priority.toString(), style = MaterialTheme.typography.bodySmall)
+                Text(
+                    text = todoTaskItem.priority.toString(),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
             if (todoTaskItem.description.isNotEmpty()) {
                 Text(text = todoTaskItem.description, style = MaterialTheme.typography.bodyMedium)
             }
             val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-            Text(text = "Due: ${todoTaskItem.dueDate.format(formatter)}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "Due: ${todoTaskItem.dueDate.format(formatter)}",
+                style = MaterialTheme.typography.bodySmall
+            )
             if (todoTaskItem.tags.isNotEmpty()) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     todoTaskItem.tags.forEach { tag ->
@@ -143,6 +165,6 @@ fun TodoItemCard(todoTaskItem: TodoTaskItem) {
 @Preview
 @Composable
 fun TodoItemCardPreview() {
-    TodoItemCard(dummyTasks[2])
+    TodoItemCard(dummyTasks[2], onNavigateToTask = {})
 
 }

@@ -9,7 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.shekhargh.todolistultimate.ui.composables.AddEditScreen
+import com.shekhargh.todolistultimate.ui.navigation.TopAppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,8 +19,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TodoListUltimateTheme {
-//                MainScreenComposable()
-                AddEditScreen()
+                TopAppNavigation()
 
             }
         }
