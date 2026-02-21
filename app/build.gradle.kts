@@ -85,6 +85,7 @@ dependencies {
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)
     implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.androidx.work.testing)
     ksp(libs.androidx.room.compiler)
 
     // WorkManager
