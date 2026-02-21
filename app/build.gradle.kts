@@ -111,6 +111,7 @@ dependencies {
     testImplementation(libs.hilt.android.testing)
     kspTest(libs.hilt.compiler)
     testImplementation(libs.mockk)
+    testImplementation(libs.robolectric)
 
     // Instrumented Tests (androidTest)
     androidTestImplementation(libs.androidx.junit)
