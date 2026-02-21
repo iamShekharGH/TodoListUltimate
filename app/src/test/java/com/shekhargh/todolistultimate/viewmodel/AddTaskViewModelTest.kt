@@ -1,6 +1,7 @@
 package com.shekhargh.todolistultimate.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import com.shekhargh.todolistultimate.data.usecase.DeleteTaskUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
@@ -22,6 +23,8 @@ class AddTaskViewModelTest {
 
     private val insertItemUseCase: InsertItemUseCase = mockk(relaxed = true)
     private val updateTaskUseCase: UpdateTaskUseCase = mockk(relaxed = true)
+
+    private val deleteTaskUseCase: DeleteTaskUseCase = mockk(relaxed = true)
     private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
 
@@ -37,6 +40,7 @@ class AddTaskViewModelTest {
                 insertItemUseCase,
                 updateTaskUseCase,
                 getTaskByIdUseCase,
+                deleteTaskUseCase,
                 savedStateHandle
             )
             val title = "New Test Task"
@@ -46,7 +50,7 @@ class AddTaskViewModelTest {
 
             val taskToInsert = sut.uiState.value.changeToInputObject()
 
-            sut.onSubmitClicked()
+            sut.onSubmitClicked(onNavigateBack = {})
             coVerify(exactly = 1) { insertItemUseCase(taskToInsert) }
             coVerify(exactly = 0) { updateTaskUseCase(any()) }
 
@@ -63,6 +67,7 @@ class AddTaskViewModelTest {
                 insertItemUseCase,
                 updateTaskUseCase,
                 getTaskByIdUseCase,
+                deleteTaskUseCase,
                 savedStateHandle
             )
 
@@ -71,7 +76,7 @@ class AddTaskViewModelTest {
 
             val taskToUpdate = sut.uiState.value.changeToInputObject()
 
-            sut.onSubmitClicked()
+            sut.onSubmitClicked(onNavigateBack = {})
 
             coVerify(exactly = 0) { insertItemUseCase(any()) }
             coVerify(exactly = 1) { updateTaskUseCase(taskToUpdate) }
@@ -88,10 +93,35 @@ class AddTaskViewModelTest {
                 insertItemUseCase,
                 updateTaskUseCase,
                 getTaskByIdUseCase,
+                deleteTaskUseCase,
                 savedStateHandle
             )
 
             assert(sut.uiState.value.title == existingTask.title)
             assert(sut.uiState.value.description == existingTask.description)
+        }
+
+    @Test
+    fun `given task is loaded, when onDeleteClicked is called, then delete use case is invoked`() =
+        runTest {
+            val taskItem = dummyTasks[7]
+            val taskToDeleteId = taskItem.id
+            coEvery { deleteTaskUseCase(taskToDeleteId) } returns 1
+            coEvery { savedStateHandle.get<Int>("task_id") } returns taskToDeleteId
+            coEvery { getTaskByIdUseCase(taskToDeleteId) } returns taskItem
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                deleteTaskUseCase,
+                savedStateHandle
+            )
+
+            sut.onDeleteClicked({})
+
+            coVerify(exactly = 1) { deleteTaskUseCase(taskToDeleteId) }
+
+
         }
 }

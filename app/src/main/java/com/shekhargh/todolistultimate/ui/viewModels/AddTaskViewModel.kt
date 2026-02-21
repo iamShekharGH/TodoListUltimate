@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shekhargh.todolistultimate.data.Priority
 import com.shekhargh.todolistultimate.data.TodoTaskItem
+import com.shekhargh.todolistultimate.data.usecase.DeleteTaskUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
@@ -21,6 +22,7 @@ class AddTaskViewModel @Inject constructor(
     private val insertItemUseCase: InsertItemUseCase,
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -63,14 +65,25 @@ class AddTaskViewModel @Inject constructor(
         }
     }
 
-    fun onSubmitClicked() {
+    fun onSubmitClicked(onNavigateBack: () -> Unit) {
         viewModelScope.launch {
             val taskToSave = uiState.value.changeToInputObject()
-            if (taskId == null || taskId == -1) {
+            var resultId: Number = if (taskId == null || taskId == -1) {
                 insertItemUseCase(taskToSave)
             } else {
                 updateTaskUseCase(taskToSave.copy(id = taskId))
             }
+            if (resultId == 1){
+                onNavigateBack()
+            }
+
+        }
+    }
+
+    fun onDeleteClicked(onNavigateBack: () -> Unit) {
+        viewModelScope.launch {
+            val deleteConfirmed = deleteTaskUseCase(uiState.value.id)
+            if (deleteConfirmed == 1) onNavigateBack()
         }
     }
 }
