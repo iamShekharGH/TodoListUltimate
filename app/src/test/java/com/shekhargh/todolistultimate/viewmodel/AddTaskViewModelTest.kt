@@ -157,7 +157,7 @@ class AddTaskViewModelTest {
                 savedStateHandle
             )
 
-            sut.onSubmitClicked { {} }
+            sut.onSubmitClicked { }
 
             verify(exactly = 1) {
                 taskSchedular.scheduleTask(any())
@@ -184,7 +184,7 @@ class AddTaskViewModelTest {
                 savedStateHandle
             )
 
-            sut.onDeleteClicked { {} }
+            sut.onDeleteClicked { }
 
             verify(exactly = 1) {
                 taskSchedular.cancelTask(any())
