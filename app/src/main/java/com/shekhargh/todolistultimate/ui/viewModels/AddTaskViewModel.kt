@@ -9,6 +9,7 @@ import com.shekhargh.todolistultimate.data.usecase.DeleteTaskUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
+import com.shekhargh.todolistultimate.domain.TaskSchedular
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +24,7 @@ class AddTaskViewModel @Inject constructor(
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val taskSchedular: TaskSchedular,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -73,7 +75,8 @@ class AddTaskViewModel @Inject constructor(
             } else {
                 updateTaskUseCase(taskToSave.copy(id = taskId))
             }
-            if (resultId == 1){
+            if (resultId == 1) {
+                taskSchedular.scheduleTask(taskToSave)
                 onNavigateBack()
             }
 
@@ -83,7 +86,10 @@ class AddTaskViewModel @Inject constructor(
     fun onDeleteClicked(onNavigateBack: () -> Unit) {
         viewModelScope.launch {
             val deleteConfirmed = deleteTaskUseCase(uiState.value.id)
-            if (deleteConfirmed == 1) onNavigateBack()
+            if (deleteConfirmed == 1) {
+                taskSchedular.cancelTask(uiState.value.id)
+                onNavigateBack()
+            }
         }
     }
 }

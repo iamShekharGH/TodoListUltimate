@@ -1,10 +1,12 @@
 package com.shekhargh.todolistultimate.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.work.WorkManager
 import com.shekhargh.todolistultimate.data.usecase.DeleteTaskUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
+import com.shekhargh.todolistultimate.domain.TaskSchedular
 import com.shekhargh.todolistultimate.ui.viewModels.AddTaskViewModel
 import com.shekhargh.todolistultimate.ui.viewModels.changeToInputObject
 import com.shekhargh.todolistultimate.util.MainDispatcherRule
@@ -12,9 +14,11 @@ import com.shekhargh.todolistultimate.util.dummyTasks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
+import java.time.LocalDateTime
 
 class AddTaskViewModelTest {
 
@@ -27,6 +31,10 @@ class AddTaskViewModelTest {
     private val deleteTaskUseCase: DeleteTaskUseCase = mockk(relaxed = true)
     private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
+
+    private val workManager: WorkManager = mockk(relaxed = true)
+
+    private val taskSchedular: TaskSchedular = mockk(relaxed = true)
 
     private lateinit var sut: AddTaskViewModel
 
@@ -41,6 +49,7 @@ class AddTaskViewModelTest {
                 updateTaskUseCase,
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
+                taskSchedular,
                 savedStateHandle
             )
             val title = "New Test Task"
@@ -68,6 +77,7 @@ class AddTaskViewModelTest {
                 updateTaskUseCase,
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
+                taskSchedular,
                 savedStateHandle
             )
 
@@ -94,6 +104,7 @@ class AddTaskViewModelTest {
                 updateTaskUseCase,
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
+                taskSchedular,
                 savedStateHandle
             )
 
@@ -115,6 +126,7 @@ class AddTaskViewModelTest {
                 updateTaskUseCase,
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
+                taskSchedular,
                 savedStateHandle
             )
 
@@ -123,5 +135,59 @@ class AddTaskViewModelTest {
             coVerify(exactly = 1) { deleteTaskUseCase(taskToDeleteId) }
 
 
+        }
+
+    @Test
+    fun `give valid task when submit it clicked then task is scheduled`() =
+        runTest {
+            val futureDate = LocalDateTime.now().plusHours(1)
+            val task = dummyTasks[9].copy(id = 1, dueDate = futureDate)
+
+            coEvery { insertItemUseCase(any()) } returns 1
+            coEvery { updateTaskUseCase(any()) } returns 1
+            coEvery { savedStateHandle.get<Int>("task_id") } returns task.id
+            coEvery { getTaskByIdUseCase(task.id) } returns task
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                deleteTaskUseCase,
+                taskSchedular,
+                savedStateHandle
+            )
+
+            sut.onSubmitClicked { {} }
+
+            verify(exactly = 1) {
+                taskSchedular.scheduleTask(any())
+            }
+        }
+
+
+    @Test
+    fun `given existing task when delete it clicked then task is cancelled`() =
+        runTest {
+            val futureDate = LocalDateTime.now().plusHours(1)
+            val task = dummyTasks[9].copy(id = 1, dueDate = futureDate)
+
+            coEvery { deleteTaskUseCase(any()) } returns 1
+            coEvery { savedStateHandle.get<Int>("task_id") } returns task.id
+            coEvery { getTaskByIdUseCase(task.id) } returns task
+
+            sut = AddTaskViewModel(
+                insertItemUseCase,
+                updateTaskUseCase,
+                getTaskByIdUseCase,
+                deleteTaskUseCase,
+                taskSchedular,
+                savedStateHandle
+            )
+
+            sut.onDeleteClicked { {} }
+
+            verify(exactly = 1) {
+                taskSchedular.cancelTask(any())
+            }
         }
 }
