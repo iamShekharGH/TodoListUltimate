@@ -5,7 +5,9 @@ import androidx.room.Room
 import com.shekhargh.todolistultimate.data.TASK_MASTER_DATABASE_NAME
 import com.shekhargh.todolistultimate.data.TodoListUltimateDao
 import com.shekhargh.todolistultimate.data.TodoListUltimateDatabase
+import com.shekhargh.todolistultimate.data.WorkManagerTaskSchedular
 import com.shekhargh.todolistultimate.data.repository.TodoListUltimateRepositoryImpl
+import com.shekhargh.todolistultimate.domain.TaskSchedular
 import com.shekhargh.todolistultimate.domain.TodoListUltimateRepository
 import com.shekhargh.todolistultimate.worker.notification.TaskNotifier
 import com.shekhargh.todolistultimate.worker.notification.TaskNotifierImpl
@@ -29,6 +31,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsTaskNotifier(impl: TaskNotifierImpl): TaskNotifier
+
+    @Binds
+    @Singleton
+    abstract fun bindsTaskSchedular(workManagerTaskSchedular: WorkManagerTaskSchedular): TaskSchedular
 
     companion object {
         @Provides
