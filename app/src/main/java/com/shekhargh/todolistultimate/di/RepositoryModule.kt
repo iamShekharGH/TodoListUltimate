@@ -7,6 +7,8 @@ import com.shekhargh.todolistultimate.data.TodoListUltimateDao
 import com.shekhargh.todolistultimate.data.TodoListUltimateDatabase
 import com.shekhargh.todolistultimate.data.repository.TodoListUltimateRepositoryImpl
 import com.shekhargh.todolistultimate.domain.TodoListUltimateRepository
+import com.shekhargh.todolistultimate.worker.notification.TaskNotifier
+import com.shekhargh.todolistultimate.worker.notification.TaskNotifierImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -23,6 +25,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindsRepository(impl: TodoListUltimateRepositoryImpl): TodoListUltimateRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindsTaskNotifier(impl: TaskNotifierImpl): TaskNotifier
 
     companion object {
         @Provides
