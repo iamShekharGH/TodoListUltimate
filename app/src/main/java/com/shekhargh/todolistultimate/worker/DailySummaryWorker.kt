@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 
 @HiltWorker
-class TaskNotificationWorker @AssistedInject constructor(
+class DailySummaryWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
     private val getAllTasksUseCase: GetAllTasksUseCase,

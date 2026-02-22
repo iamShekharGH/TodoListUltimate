@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 
 
 @RunWith(RobolectricTestRunner::class)
-class TaskNotificationWorkerTest {
+class DailySummaryWorkerTest {
 
     private val getAllTasksUseCase: GetAllTasksUseCase = mockk(relaxed = true)
     private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk(relaxed = true)
@@ -45,7 +45,7 @@ class TaskNotificationWorkerTest {
                 workerClassName: String,
                 workerParameters: WorkerParameters
             ): ListenableWorker {
-                return TaskNotificationWorker(
+                return DailySummaryWorker(
                     appContext,
                     workerParameters,
                     getAllTasksUseCase,
@@ -59,7 +59,7 @@ class TaskNotificationWorkerTest {
 
     @Test
     fun test_doWork_ReturnSuccess() = runTest {
-        val worker = TestListenableWorkerBuilder<TaskNotificationWorker>(context)
+        val worker = TestListenableWorkerBuilder<DailySummaryWorker>(context)
             .setWorkerFactory(factory)
             .build()
 
@@ -74,7 +74,7 @@ class TaskNotificationWorkerTest {
         coEvery { getAllTasksUseCase() } returns flowOf(dummyTasks)
 
         val worker =
-            TestListenableWorkerBuilder<TaskNotificationWorker>(context).setWorkerFactory(factory)
+            TestListenableWorkerBuilder<DailySummaryWorker>(context).setWorkerFactory(factory)
                 .build()
         worker.doWork()
         coVerify(exactly = 1) { getAllTasksUseCase() }
@@ -88,7 +88,7 @@ class TaskNotificationWorkerTest {
         coEvery { getAllTasksUseCase() } returns flowOf(listOf(dueTask))
 
         val worker =
-            TestListenableWorkerBuilder<TaskNotificationWorker>(context).setWorkerFactory(factory)
+            TestListenableWorkerBuilder<DailySummaryWorker>(context).setWorkerFactory(factory)
                 .build()
         worker.doWork()
         coVerify(exactly = 1) { taskNotifier.showNotification(dueTask) }
@@ -101,7 +101,7 @@ class TaskNotificationWorkerTest {
         coEvery { getAllTasksUseCase() } returns flowOf(listOf(dueTask))
 
         val worker =
-            TestListenableWorkerBuilder<TaskNotificationWorker>(context).setWorkerFactory(factory)
+            TestListenableWorkerBuilder<DailySummaryWorker>(context).setWorkerFactory(factory)
                 .build()
         worker.doWork()
         coVerify(exactly = 0) { taskNotifier.showNotification(dueTask) }
