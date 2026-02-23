@@ -17,6 +17,8 @@ class TodoListUltimateRepositoryImpl @Inject constructor(
 
     override fun getAllDummyTasks(): Flow<List<TodoTaskItem>> = flowOf(dummyTasks)
 
+    override suspend fun getWidgetTasks(): List<TodoTaskItem> = dao.getWidgetTasks()
+
     override suspend fun insertItem(item: TodoTaskItem) = dao.insertItem(item)
 
     override suspend fun deleteItem(item: Int) = dao.deleteItem(item)

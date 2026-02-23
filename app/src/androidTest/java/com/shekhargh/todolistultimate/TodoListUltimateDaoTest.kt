@@ -98,5 +98,15 @@ class TodoListUltimateDaoTest {
 
     }
 
+    @Test
+    fun getAllItemsFromDbForWidget() = runTest {
+        dao.insertItem(dummyTasks[0])
+        dao.insertItem(dummyTasks[1])
+        val tasks = dao.getWidgetTasks()
+
+        assertThat(tasks.size).isEqualTo(2)
+        assertThat(tasks).isEqualTo(listOf(dummyTasks[0], dummyTasks[1]))
+    }
+
 
 }
