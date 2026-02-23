@@ -7,3 +7,6 @@ interface SuspendUseCase<in I, out O> {
 interface NoParameterUseCase<out O> {
     operator fun invoke(): O
 }
+interface NoParameterSuspendUseCase<out O> {
+    suspend operator fun invoke(): O
+}
