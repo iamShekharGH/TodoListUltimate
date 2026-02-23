@@ -1,5 +1,10 @@
 package com.shekhargh.todolistultimate.ui.composables
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,15 +27,19 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shekhargh.todolistultimate.data.TodoTaskItem
 import com.shekhargh.todolistultimate.ui.viewModels.MainTodoListViewModel
+import com.shekhargh.todolistultimate.ui.viewModels.PermissionStatus
 import com.shekhargh.todolistultimate.ui.viewModels.UiState
 import com.shekhargh.todolistultimate.util.dummyTasks
 import java.time.format.DateTimeFormatter
@@ -41,6 +50,34 @@ fun MainScreen(
     onNavigateToTask: (Int) -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val permissionStatus = viewModel.permissionStatus.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            viewModel.onPermissionResult(it)
+        }
+    )
+
+    LaunchedEffect(permissionStatus.value) {
+        if (permissionStatus.value == PermissionStatus.UNKNOWN) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                val isAlreadyGranted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (isAlreadyGranted) {
+                    viewModel.onPermissionResult(true)
+                } else {
+                    permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            viewModel.onPermissionResult(true)
+        }
+    }
 
     Scaffold(modifier = Modifier.fillMaxSize(), floatingActionButton = {
         FloatingActionButton(

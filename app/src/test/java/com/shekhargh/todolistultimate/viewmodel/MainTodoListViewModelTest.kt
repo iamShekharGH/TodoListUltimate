@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.shekhargh.todolistultimate.data.usecase.GetAllTasksUseCase
 import com.shekhargh.todolistultimate.ui.viewModels.MainTodoListViewModel
+import com.shekhargh.todolistultimate.ui.viewModels.PermissionStatus
 import com.shekhargh.todolistultimate.ui.viewModels.UiState
 import com.shekhargh.todolistultimate.util.MainDispatcherRule
 import com.shekhargh.todolistultimate.util.dummyTasks
@@ -79,4 +80,19 @@ class MainTodoListViewModelTest {
             coVerify(exactly = 1) { getAllTasksUseCase() }
             job.cancel()
         }
+
+    @Test
+    fun `given initial init, then permission status is UNKNOWN`() = runTest {
+        sut = MainTodoListViewModel(getAllTasksUseCase)
+        assertThat(sut.permissionStatus.value).isEqualTo(PermissionStatus.UNKNOWN)
+    }
+
+    @Test
+    fun `when onPermission is called, then permission status updates to RESOLVED`() = runTest {
+        sut = MainTodoListViewModel(getAllTasksUseCase)
+
+        sut.onPermissionResult(isGranted = true)
+
+        assertThat(sut.permissionStatus.value).isEqualTo(PermissionStatus.RESOLVED)
+    }
 }
