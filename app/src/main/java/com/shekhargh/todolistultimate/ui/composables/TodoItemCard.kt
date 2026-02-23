@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,7 +39,7 @@ fun TodoItemCard(
     val isDone = todoTaskItem.isItDone
 
     val cardContainerColor by animateColorAsState(
-        targetValue = if (isDone) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surfaceVariant,
+        targetValue = if (isDone) MaterialTheme.colorScheme.surfaceContainer else MaterialTheme.colorScheme.surfaceVariant,
         label = "Card container color"
     )
 
@@ -72,12 +71,12 @@ fun TodoItemCard(
                         text = todoTaskItem.title,
                         style = MaterialTheme.typography.titleMedium,
                         textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None,
-                        color = if (isDone) Color.Gray else MaterialTheme.colorScheme.onSurface
+                        color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = todoTaskItem.priority.toString(),
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (isDone) Color.Gray else MaterialTheme.colorScheme.primary
+                        color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary
 
                     )
                 }
@@ -86,14 +85,14 @@ fun TodoItemCard(
                         text = todoTaskItem.description,
                         style = MaterialTheme.typography.bodyMedium,
                         textDecoration = if (isDone) TextDecoration.LineThrough else TextDecoration.None,
-                        color = if (isDone) Color.Gray else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
                 Text(
                     text = "Due: ${todoTaskItem.dueDate.format(formatter)}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = if (isDone) Color.Gray else MaterialTheme.colorScheme.outline
+                    color = if (isDone) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outline
                 )
                 if (todoTaskItem.tags.isNotEmpty()) {
                     FlowRow(
