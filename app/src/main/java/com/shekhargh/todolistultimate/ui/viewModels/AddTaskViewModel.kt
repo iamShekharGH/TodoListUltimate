@@ -61,6 +61,10 @@ class AddTaskViewModel @Inject constructor(
         }
     }
 
+    fun onDateTimeChanged(newDateTime: LocalDateTime) {
+        _uiState.update { it.copy(dueDate = newDateTime) }
+    }
+
     fun onPrioritySelected(priority: Priority) {
         _uiState.update { currentState ->
             currentState.copy(priority = priority)

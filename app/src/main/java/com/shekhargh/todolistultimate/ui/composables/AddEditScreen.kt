@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,7 +32,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -51,6 +58,10 @@ import com.shekhargh.todolistultimate.ui.viewModels.toAddTaskUiState
 import com.shekhargh.todolistultimate.util.dummyTasks
 import com.shekhargh.todolistultimate.util.toSimpleDateString
 import com.shekhargh.todolistultimate.util.toSimpleTimeString
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,6 +111,7 @@ fun AddEditScreen(
                 onDoneCheck = viewModel::onDoneCheck,
                 onPrioritySelected = viewModel::onPrioritySelected,
                 onSubmitClicked = viewModel::onSubmitClicked,
+                onDateTimeChanged = viewModel::onDateTimeChanged,
                 onNavigateBack = onNavigateBack,
                 paddingValues = padding
             )
@@ -107,6 +119,7 @@ fun AddEditScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditScreenComposable(
     uiState: State<AddTaskUiState>,
@@ -115,11 +128,23 @@ fun AddEditScreenComposable(
     onDoneCheck: (Boolean) -> Unit,
     onPrioritySelected: (Priority) -> Unit,
     onSubmitClicked: (onNavigateBack: () -> Unit) -> Unit,
+    onDateTimeChanged: (LocalDateTime) -> Unit,
     onNavigateBack: () -> Unit,
     paddingValues: PaddingValues
 ) {
 
     var showPriorityMenu by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = uiState.value.dueDate.atZone(ZoneId.systemDefault())
+            .toInstant().toEpochMilli()
+    )
+    val timePickerState = rememberTimePickerState(
+        initialHour = uiState.value.dueDate.hour,
+        initialMinute = uiState.value.dueDate.minute
+    )
+
 
 
     Column(
@@ -171,8 +196,8 @@ fun AddEditScreenComposable(
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                    uncheckedThumbColor = MaterialTheme.colorScheme.error,
-                    uncheckedTrackColor = MaterialTheme.colorScheme.errorContainer,
+                    uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                    uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
             )
         }
@@ -192,7 +217,7 @@ fun AddEditScreenComposable(
             Text(text = "On", fontSize = 19.sp)
             ElevatedButton(
                 onClick = {
-
+                    showDatePicker = true
                 }
             ) {
                 Text(text = uiState.value.dueDate.toSimpleDateString())
@@ -214,7 +239,7 @@ fun AddEditScreenComposable(
             Text(text = "At", fontSize = 19.sp)
             ElevatedButton(
                 onClick = {
-
+                    showTimePicker = true
                 }
             ) {
                 Text(text = uiState.value.dueDate.toSimpleTimeString())
@@ -285,6 +310,51 @@ fun AddEditScreenComposable(
         ) {
             Text("Submit Task")
         }
+
+        if (showDatePicker) {
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val newDate =
+                                    Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
+                                        .toLocalDate()
+                                val currentDate = uiState.value.dueDate
+                                onDateTimeChanged(newDate.atTime(currentDate.toLocalTime()))
+                                showDatePicker = false
+                            }
+                        }
+                    ) {
+                        Text("Ok")
+                    }
+                }
+            ) {
+                DatePicker(
+                    state = datePickerState
+                )
+            }
+        }
+
+        if (showTimePicker) {
+            TimePickerDialog(
+                onDismissRequest = { showTimePicker = false },
+                title = { Text("When is thid Due?") },
+                confirmButton = {
+                    val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+
+                    val currentDateTime = uiState.value.dueDate
+                    onDateTimeChanged(newTime.atDate(currentDateTime.toLocalDate()))
+//                    showTimePicker = false
+                }
+            ) {
+                TimePicker(state = timePickerState)
+            }
+
+        }
+
+
     }
 }
 
@@ -299,7 +369,8 @@ fun AddEditScreenComposablePreview() {
         onDoneCheck = {},
         onPrioritySelected = {},
         onSubmitClicked = {},
+        onDateTimeChanged = {},
         onNavigateBack = {},
-        paddingValues = PaddingValues(4.dp)
+        paddingValues = PaddingValues(4.dp),
     )
 }
