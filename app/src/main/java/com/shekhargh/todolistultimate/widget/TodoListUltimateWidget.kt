@@ -1,6 +1,8 @@
 package com.shekhargh.todolistultimate.widget
 
 import android.content.Context
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
@@ -23,6 +25,7 @@ import androidx.glance.layout.padding
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import com.shekhargh.todolistultimate.data.usecase.GetAllTasksUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetWidgetTaskUseCase
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -38,6 +41,7 @@ class TodoListUltimateWidgetReceiver : GlanceAppWidgetReceiver() {
 @InstallIn(SingletonComponent::class)
 interface WidgetEntryPoint {
     fun getWidgetTaskUseCase(): GetWidgetTaskUseCase
+    fun getAllTasksUseCase(): GetAllTasksUseCase
 }
 
 class TodoListUltimateWidget : GlanceAppWidget() {
@@ -49,11 +53,16 @@ class TodoListUltimateWidget : GlanceAppWidget() {
             context.applicationContext,
             WidgetEntryPoint::class.java
         )
-        val tasks = entryPoint.getWidgetTaskUseCase().invoke()
-        val groupedTasks =
-            tasks.sortedBy { it.dueDate }.groupBy { it.dueDate.toLocalDate().toString() }
+        val initialTasks = entryPoint.getWidgetTaskUseCase().invoke()
+        val taskFlow = entryPoint.getAllTasksUseCase().invoke()
+
+
 
         provideContent {
+            val tasks by taskFlow.collectAsState(initial = initialTasks)
+            val groupedTasks =
+                tasks.sortedBy { it.dueDate }.groupBy { it.dueDate.toLocalDate().toString() }
+
             GlanceTheme(
                 colors = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
                     GlanceTheme.colors
