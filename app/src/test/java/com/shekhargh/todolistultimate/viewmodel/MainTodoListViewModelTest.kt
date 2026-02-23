@@ -57,6 +57,7 @@ class MainTodoListViewModelTest {
                 }
             }
 
+            @Suppress("UnusedFlow")
             coVerify(exactly = 1) { getAllTasksUseCase() }
             job.cancel()
 
@@ -77,6 +78,7 @@ class MainTodoListViewModelTest {
                 }
             }
 
+            @Suppress("UnusedFlow")
             coVerify(exactly = 1) { getAllTasksUseCase() }
             job.cancel()
         }
