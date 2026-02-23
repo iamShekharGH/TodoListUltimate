@@ -39,4 +39,17 @@ class TaskNotifierImpl @Inject constructor(@param:ApplicationContext private val
         notificationManager.notify(task.id, notification)
 
     }
+
+    override fun showNotificationSummary(list: List<TodoTaskItem>) {
+        val summary = list.joinToString(separator = "\n") { "• ${it.title}" }
+        val notification = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Pending tasks (${list.size}):~")
+            .setContentText("You have ${list.size} tasks left")
+            .setStyle(NotificationCompat.BigTextStyle().bigText(summary))
+            .setPriority(NotificationManager.IMPORTANCE_HIGH)
+            .build()
+        notificationManager.notify(1001, notification)
+    }
+
 }

@@ -4,4 +4,6 @@ import com.shekhargh.todolistultimate.data.TodoTaskItem
 
 interface TaskNotifier {
     fun showNotification(task: TodoTaskItem)
+
+    fun showNotificationSummary(list: List<TodoTaskItem>)
 }
