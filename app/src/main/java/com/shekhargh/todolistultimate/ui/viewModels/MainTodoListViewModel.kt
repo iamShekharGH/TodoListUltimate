@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shekhargh.todolistultimate.data.TodoTaskItem
 import com.shekhargh.todolistultimate.data.usecase.GetAllTasksUseCase
+import com.shekhargh.todolistultimate.data.usecase.UpdateCompleteStatusParams
+import com.shekhargh.todolistultimate.data.usecase.UpdateItemCompletionStatusUseCase
+import com.shekhargh.todolistultimate.domain.WidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -11,11 +14,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainTodoListViewModel @Inject constructor(
-    getAllTasksUseCase: GetAllTasksUseCase
+    getAllTasksUseCase: GetAllTasksUseCase,
+    private val updateItemCompletionStatusUseCase: UpdateItemCompletionStatusUseCase,
+    private val widgetUpdater: WidgetUpdater
 ) : ViewModel() {
 
     private val _permissionStatus = MutableStateFlow(PermissionStatus.UNKNOWN)
@@ -33,6 +39,23 @@ class MainTodoListViewModel @Inject constructor(
         _permissionStatus.value = if (isGranted)
             PermissionStatus.RESOLVED
         else PermissionStatus.UNKNOWN
+    }
+
+    fun onUpdateCompletionState(id: Int, currentState: Boolean) {
+        viewModelScope.launch {
+            val affectedRows = updateItemCompletionStatusUseCase(
+                UpdateCompleteStatusParams(
+                    isItDone = currentState,
+                    itemId = id
+
+                )
+            )
+            if (affectedRows > 0) updateWidget()
+        }
+    }
+
+    private fun updateWidget() {
+        viewModelScope.launch { widgetUpdater.updateWidget() }
     }
 
     /*
