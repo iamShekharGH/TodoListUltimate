@@ -1,12 +1,12 @@
 package com.shekhargh.todolistultimate.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.work.WorkManager
 import com.shekhargh.todolistultimate.data.usecase.DeleteTaskUseCase
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
 import com.shekhargh.todolistultimate.domain.TaskSchedular
+import com.shekhargh.todolistultimate.domain.WidgetUpdater
 import com.shekhargh.todolistultimate.ui.viewModels.AddTaskViewModel
 import com.shekhargh.todolistultimate.ui.viewModels.changeToInputObject
 import com.shekhargh.todolistultimate.util.MainDispatcherRule
@@ -32,7 +32,7 @@ class AddTaskViewModelTest {
     private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk()
     private val savedStateHandle: SavedStateHandle = mockk()
 
-    private val workManager: WorkManager = mockk(relaxed = true)
+    private val widgetUpdater: WidgetUpdater = mockk(relaxed = true)
 
     private val taskSchedular: TaskSchedular = mockk(relaxed = true)
 
@@ -50,6 +50,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
             val title = "New Test Task"
@@ -78,6 +79,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
 
@@ -105,6 +107,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
 
@@ -127,6 +130,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
 
@@ -154,6 +158,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
 
@@ -181,6 +186,7 @@ class AddTaskViewModelTest {
                 getTaskByIdUseCase,
                 deleteTaskUseCase,
                 taskSchedular,
+                widgetUpdater,
                 savedStateHandle
             )
 
@@ -190,4 +196,31 @@ class AddTaskViewModelTest {
                 taskSchedular.cancelTask(any())
             }
         }
+
+    @Test
+    fun `given item is updated when update is clicked then widget is updated`() = runTest {
+
+        val taskItem = dummyTasks[7]
+        val taskToDeleteId = taskItem.id
+        coEvery { deleteTaskUseCase(taskToDeleteId) } returns 1
+        coEvery { savedStateHandle.get<Int>("task_id") } returns taskToDeleteId
+        coEvery { getTaskByIdUseCase(taskToDeleteId) } returns taskItem
+        coEvery { insertItemUseCase(taskItem) } returns 1
+        coEvery { updateTaskUseCase(taskItem) } returns 1
+
+        sut = AddTaskViewModel(
+            insertItemUseCase,
+            updateTaskUseCase,
+            getTaskByIdUseCase,
+            deleteTaskUseCase,
+            taskSchedular,
+            widgetUpdater,
+            savedStateHandle
+        )
+
+        sut.onSubmitClicked { }
+
+        coVerify(exactly = 1) { widgetUpdater.updateWidget() }
+
+    }
 }

@@ -10,6 +10,7 @@ import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.data.usecase.InsertItemUseCase
 import com.shekhargh.todolistultimate.data.usecase.UpdateTaskUseCase
 import com.shekhargh.todolistultimate.domain.TaskSchedular
+import com.shekhargh.todolistultimate.domain.WidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,6 +26,7 @@ class AddTaskViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
     private val taskSchedular: TaskSchedular,
+    private val widgetUpdater: WidgetUpdater,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -81,9 +83,16 @@ class AddTaskViewModel @Inject constructor(
             }
             if (resultId == 1) {
                 taskSchedular.scheduleTask(taskToSave)
+                updateWidget()
                 onNavigateBack()
             }
 
+        }
+    }
+
+    private fun updateWidget() {
+        viewModelScope.launch {
+            widgetUpdater.updateWidget()
         }
     }
 
