@@ -3,7 +3,6 @@ package com.shekhargh.todolistultimate.ui.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,7 +14,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
@@ -112,8 +110,7 @@ fun AddEditScreen(
                 onPrioritySelected = viewModel::onPrioritySelected,
                 onSubmitClicked = viewModel::onSubmitClicked,
                 onDateTimeChanged = viewModel::onDateTimeChanged,
-                onNavigateBack = onNavigateBack,
-                paddingValues = padding
+                onNavigateBack = onNavigateBack
             )
         }
     }
@@ -129,8 +126,7 @@ fun AddEditScreenComposable(
     onPrioritySelected: (Priority) -> Unit,
     onSubmitClicked: (onNavigateBack: () -> Unit) -> Unit,
     onDateTimeChanged: (LocalDateTime) -> Unit,
-    onNavigateBack: () -> Unit,
-    paddingValues: PaddingValues
+    onNavigateBack: () -> Unit
 ) {
 
     var showPriorityMenu by remember { mutableStateOf(false) }
@@ -147,9 +143,7 @@ fun AddEditScreenComposable(
 
 
 
-    Column(
-        modifier = Modifier.padding(paddingValues)
-    ) {
+    Column {
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -201,11 +195,7 @@ fun AddEditScreenComposable(
                 )
             )
         }
-        HorizontalDivider(
-            Modifier.padding(start = 8.dp, end = 8.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
-        )
+        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
 
         Row(
             modifier = Modifier
@@ -223,11 +213,7 @@ fun AddEditScreenComposable(
                 Text(text = uiState.value.dueDate.toSimpleDateString())
             }
         }
-        HorizontalDivider(
-            Modifier.padding(start = 8.dp, end = 8.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
-        )
+        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
 
         Row(
             modifier = Modifier
@@ -245,11 +231,7 @@ fun AddEditScreenComposable(
                 Text(text = uiState.value.dueDate.toSimpleTimeString())
             }
         }
-        HorizontalDivider(
-            Modifier.padding(start = 8.dp, end = 8.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
-        )
+        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
 
         Row(
             modifier = Modifier
@@ -293,11 +275,7 @@ fun AddEditScreenComposable(
             }
         }
 
-        HorizontalDivider(
-            Modifier.padding(start = 8.dp, end = 8.dp),
-            DividerDefaults.Thickness,
-            DividerDefaults.color
-        )
+        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
 
 
         OutlinedButton(
@@ -340,21 +318,23 @@ fun AddEditScreenComposable(
         if (showTimePicker) {
             TimePickerDialog(
                 onDismissRequest = { showTimePicker = false },
-                title = { Text("When is thid Due?") },
+                title = { Text("When is it Due?") },
                 confirmButton = {
-                    val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
-
-                    val currentDateTime = uiState.value.dueDate
-                    onDateTimeChanged(newTime.atDate(currentDateTime.toLocalDate()))
-//                    showTimePicker = false
+                    TextButton(
+                        onClick = {
+                            val newTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                            val currentDateTime = uiState.value.dueDate
+                            onDateTimeChanged(newTime.atDate(currentDateTime.toLocalDate()))
+                            showTimePicker = false
+                        }
+                    ) {
+                        Text("Ok")
+                    }
                 }
             ) {
                 TimePicker(state = timePickerState)
             }
-
         }
-
-
     }
 }
 
@@ -370,7 +350,6 @@ fun AddEditScreenComposablePreview() {
         onPrioritySelected = {},
         onSubmitClicked = {},
         onDateTimeChanged = {},
-        onNavigateBack = {},
-        paddingValues = PaddingValues(4.dp),
+        onNavigateBack = {}
     )
 }
