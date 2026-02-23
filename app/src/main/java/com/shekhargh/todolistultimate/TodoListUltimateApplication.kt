@@ -5,8 +5,6 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.shekhargh.todolistultimate.worker.DailySummaryWorker
@@ -41,11 +39,5 @@ class TodoListUltimateApplication : Application(), Configuration.Provider {
                 existingPeriodicWorkPolicy = ExistingPeriodicWorkPolicy.REPLACE,
                 request = workRequest
             )
-
-        val workRequestOneTime = OneTimeWorkRequestBuilder<DailySummaryWorker>().build()
-        WorkManager.getInstance(this)
-            .enqueueUniqueWork("ot", ExistingWorkPolicy.REPLACE, workRequestOneTime)
-
-
     }
 }

@@ -1,6 +1,7 @@
 package com.shekhargh.todolistultimate.worker
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
@@ -8,10 +9,10 @@ import com.shekhargh.todolistultimate.worker.notification.TaskNotifier
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+@HiltWorker
 class TaskReminderWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted params: WorkerParameters,
-//    private val getAllTasksUseCase: GetAllTasksUseCase,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val taskNotifier: TaskNotifier
 ) : CoroutineWorker(appContext, params) {

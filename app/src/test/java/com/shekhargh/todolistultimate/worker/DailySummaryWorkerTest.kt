@@ -9,7 +9,6 @@ import androidx.work.WorkerParameters
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.google.common.truth.Truth.assertThat
 import com.shekhargh.todolistultimate.data.usecase.GetAllTasksUseCase
-import com.shekhargh.todolistultimate.data.usecase.GetTaskByIdUseCase
 import com.shekhargh.todolistultimate.util.dummyTasks
 import com.shekhargh.todolistultimate.worker.notification.TaskNotifier
 import io.mockk.coEvery
@@ -28,7 +27,6 @@ import java.time.LocalDateTime
 class DailySummaryWorkerTest {
 
     private val getAllTasksUseCase: GetAllTasksUseCase = mockk(relaxed = true)
-    private val getTaskByIdUseCase: GetTaskByIdUseCase = mockk(relaxed = true)
     private val taskNotifier: TaskNotifier = mockk(relaxed = true)
 
     private lateinit var factory: WorkerFactory
@@ -49,7 +47,6 @@ class DailySummaryWorkerTest {
                     appContext,
                     workerParameters,
                     getAllTasksUseCase,
-                    getTaskByIdUseCase,
                     taskNotifier
                 )
             }
