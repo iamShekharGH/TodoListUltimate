@@ -90,7 +90,7 @@ fun MainScreen(
                     innerPadding,
                     ui.items,
                     onNavigateToTask,
-                    viewModel::onUpdateCompletionStatue
+                    viewModel::onUpdateCompletionState
                 )
             }
 
