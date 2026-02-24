@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.shekhargh.todolistultimate.ui.composables.AddEditScreen
 import com.shekhargh.todolistultimate.ui.composables.MainScreen
 
@@ -26,12 +27,15 @@ fun TopAppNavigation() {
         }
         composable(
             route = AddItemScreen.routeWithArg,
-            arguments = AddItemScreen.arguments
-        ) { AddEditScreen(
-            onNavigateBack = {
-                navController.popBackStack()
-            }
-        ) }
+            arguments = AddItemScreen.arguments,
+            deepLinks = AddItemScreen.deepLink
+        ) {
+            AddEditScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
 
     }
 
@@ -57,6 +61,7 @@ object AddItemScreen : Destinations {
             defaultValue = -1
         }
     )
+    val deepLink = listOf(navDeepLink { uriPattern = "taskmaster://task/{$taskIdArg}" })
 
     fun withId(id: Int): String {
         return "$route?$taskIdArg=$id"

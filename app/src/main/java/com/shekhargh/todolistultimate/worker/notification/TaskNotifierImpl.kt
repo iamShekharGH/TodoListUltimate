@@ -2,9 +2,13 @@ package com.shekhargh.todolistultimate.worker.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.TaskStackBuilder
+import androidx.core.net.toUri
 import com.shekhargh.todolistultimate.R
 import com.shekhargh.todolistultimate.data.TodoTaskItem
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,11 +34,22 @@ class TaskNotifierImpl @Inject constructor(@param:ApplicationContext private val
     }
 
     override fun showNotification(task: TodoTaskItem) {
+        val deepLinkIntent = Intent(
+            Intent.ACTION_VIEW,
+            "taskmaster://task/${task.id}".toUri()
+        )
+        val pendingIntent = TaskStackBuilder.create(context).run {
+            addNextIntentWithParentStack(deepLinkIntent)
+            val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            getPendingIntent(task.id, flags)
+        }
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(task.title)
             .setContentText(task.description)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
             .build()
         notificationManager.notify(task.id, notification)
 
