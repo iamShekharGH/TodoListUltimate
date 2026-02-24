@@ -3,26 +3,35 @@ package com.shekhargh.todolistultimate.ui.composables
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Flag
+import androidx.compose.material.icons.filled.Title
+import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -42,11 +51,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.shekhargh.todolistultimate.data.Priority
@@ -81,44 +88,50 @@ fun AddEditScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = "Add/Edit Tasks.")
-
+                    Text(text = if (uiState.value.id == 0) "Add Task" else "Edit Task")
+                },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 },
                 actions = {
-                    IconButton(onClick = {
-                        viewModel.onDeleteClicked(onNavigateBack)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = "Delete the task."
-                        )
+                    if (uiState.value.id != 0) {
+                        IconButton(onClick = {
+                            viewModel.onDeleteClicked(onNavigateBack)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = "Delete the task."
+                            )
+                        }
                     }
                 }
             )
 
         }
     ) { padding ->
-        Column(
-            modifier = Modifier.padding(padding)
-        ) {
-
-            AddEditScreenComposable(
-                uiState = uiState,
-                onTitleChanges = viewModel::onTitleChanges,
-                onDescriptionChanges = viewModel::onDescriptionChanges,
-                onDoneCheck = viewModel::onDoneCheck,
-                onPrioritySelected = viewModel::onPrioritySelected,
-                onSubmitClicked = viewModel::onSubmitClicked,
-                onDateTimeChanged = viewModel::onDateTimeChanged,
-                onNavigateBack = onNavigateBack
-            )
-        }
+        AddEditScreenComposable(
+            modifier = Modifier.padding(padding),
+            uiState = uiState,
+            onTitleChanges = viewModel::onTitleChanges,
+            onDescriptionChanges = viewModel::onDescriptionChanges,
+            onDoneCheck = viewModel::onDoneCheck,
+            onPrioritySelected = viewModel::onPrioritySelected,
+            onSubmitClicked = viewModel::onSubmitClicked,
+            onDateTimeChanged = viewModel::onDateTimeChanged,
+            onNavigateBack = onNavigateBack
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditScreenComposable(
+    modifier: Modifier = Modifier,
     uiState: State<AddTaskUiState>,
     onTitleChanges: (String) -> Unit,
     onDescriptionChanges: (String) -> Unit,
@@ -141,152 +154,117 @@ fun AddEditScreenComposable(
         initialMinute = uiState.value.dueDate.minute
     )
 
-
-
-    Column {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Title")
-            },
+            label = { Text("Title") },
             value = uiState.value.title,
             onValueChange = onTitleChanges,
+            leadingIcon = { Icon(Icons.Default.Title, contentDescription = null) },
+            singleLine = true
         )
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text("Description")
-            },
+            label = { Text("Description") },
             value = uiState.value.description,
             onValueChange = onDescriptionChanges,
+            leadingIcon = { Icon(Icons.AutoMirrored.Filled.Notes, contentDescription = null) },
+            minLines = 3
         )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Task Status", fontSize = 19.sp)
-            Switch(
-                checked = uiState.value.isItDone,
-                onCheckedChange = onDoneCheck,
-                thumbContent = {
-                    if (uiState.value.isItDone) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = "Task Done",
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Block,
-                            contentDescription = "Task Not Done",
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
+
+        HorizontalDivider()
+
+        ListItem(
+            headlineContent = { Text("Status") },
+            supportingContent = { Text(if (uiState.value.isItDone) "Completed" else "Pending") },
+            trailingContent = {
+                Switch(
+                    checked = uiState.value.isItDone,
+                    onCheckedChange = onDoneCheck,
+                    thumbContent = {
+                        if (uiState.value.isItDone) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Filled.Block,
+                                contentDescription = null,
+                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                            )
+                        }
                     }
-                },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                    uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-                    uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
-            )
-        }
-        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "On", fontSize = 19.sp)
-            ElevatedButton(
-                onClick = {
-                    showDatePicker = true
-                }
-            ) {
-                Text(text = uiState.value.dueDate.toSimpleDateString())
             }
-        }
-        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
+        )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "At", fontSize = 19.sp)
-            ElevatedButton(
-                onClick = {
-                    showTimePicker = true
+        ListItem(
+            headlineContent = { Text("Due Date") },
+            supportingContent = { Text(uiState.value.dueDate.toSimpleDateString()) },
+            leadingContent = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
+            trailingContent = {
+                TextButton(onClick = { showDatePicker = true }) {
+                    Text("Change")
                 }
-            ) {
-                Text(text = uiState.value.dueDate.toSimpleTimeString())
             }
-        }
-        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
+        )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp, end = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = "Priority", fontSize = 19.sp, modifier = Modifier.weight(1f))
+        ListItem(
+            headlineContent = { Text("Due Time") },
+            supportingContent = { Text(uiState.value.dueDate.toSimpleTimeString()) },
+            leadingContent = { Icon(Icons.Default.AccessTime, contentDescription = null) },
+            trailingContent = {
+                TextButton(onClick = { showTimePicker = true }) {
+                    Text("Change")
+                }
+            }
+        )
 
-            Box(
-                contentAlignment = Alignment.BottomEnd,
-
-                ) {
-                ElevatedButton(
-                    onClick = {
-                        showPriorityMenu = true
+        ListItem(
+            headlineContent = { Text("Priority") },
+            supportingContent = { Text(uiState.value.priority.name) },
+            leadingContent = { Icon(Icons.Default.Flag, contentDescription = null) },
+            trailingContent = {
+                Box {
+                    TextButton(onClick = { showPriorityMenu = true }) {
+                        Text("Set")
                     }
-                ) {
-                    Text(text = uiState.value.priority.name)
-                }
-
-                DropdownMenu(
-                    expanded = showPriorityMenu,
-                    onDismissRequest = { showPriorityMenu = false }
-                ) {
-                    Priority.entries.forEach { priority ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = priority.name
-                                )
-                            },
-                            onClick = {
-                                onPrioritySelected(priority)
-                                showPriorityMenu = false
-                            }
-                        )
+                    DropdownMenu(
+                        expanded = showPriorityMenu,
+                        onDismissRequest = { showPriorityMenu = false }
+                    ) {
+                        Priority.entries.forEach { priority ->
+                            DropdownMenuItem(
+                                text = { Text(text = priority.name) },
+                                onClick = {
+                                    onPrioritySelected(priority)
+                                    showPriorityMenu = false
+                                }
+                            )
+                        }
                     }
                 }
             }
-        }
+        )
 
-        HorizontalDivider(Modifier.padding(start = 8.dp, end = 8.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-
-        OutlinedButton(
-            onClick = {
-                onSubmitClicked(onNavigateBack)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(4.dp)
+        Button(
+            onClick = { onSubmitClicked(onNavigateBack) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
         ) {
-            Text("Submit Task")
+            Text("Save Task")
         }
 
         if (showDatePicker) {
@@ -305,20 +283,23 @@ fun AddEditScreenComposable(
                             }
                         }
                     ) {
-                        Text("Ok")
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel")
                     }
                 }
             ) {
-                DatePicker(
-                    state = datePickerState
-                )
+                DatePicker(state = datePickerState)
             }
         }
 
         if (showTimePicker) {
             TimePickerDialog(
                 onDismissRequest = { showTimePicker = false },
-                title = { Text("When is it Due?") },
+                title = { Text("Select Time") },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -328,7 +309,12 @@ fun AddEditScreenComposable(
                             showTimePicker = false
                         }
                     ) {
-                        Text("Ok")
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showTimePicker = false }) {
+                        Text("Cancel")
                     }
                 }
             ) {
@@ -338,18 +324,20 @@ fun AddEditScreenComposable(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun AddEditScreenComposablePreview() {
-    val dummyItem = dummyTasks[11].toAddTaskUiState()
-    AddEditScreenComposable(
-        uiState = remember { mutableStateOf(dummyItem) },
-        onTitleChanges = { },
-        onDescriptionChanges = {},
-        onDoneCheck = {},
-        onPrioritySelected = {},
-        onSubmitClicked = {},
-        onDateTimeChanged = {},
-        onNavigateBack = {}
-    )
+    val dummyItem = dummyTasks[0].toAddTaskUiState()
+    MaterialTheme {
+        AddEditScreenComposable(
+            uiState = remember { mutableStateOf(dummyItem) },
+            onTitleChanges = { },
+            onDescriptionChanges = {},
+            onDoneCheck = {},
+            onPrioritySelected = {},
+            onSubmitClicked = {},
+            onDateTimeChanged = {},
+            onNavigateBack = {}
+        )
+    }
 }
